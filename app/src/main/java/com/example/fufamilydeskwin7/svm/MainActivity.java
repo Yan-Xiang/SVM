@@ -76,8 +76,9 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "kernel_type");
         params.set_term_crit(new TermCriteria(TermCriteria.MAX_ITER, 100, 1e-6));
         Log.i(TAG, "params finish");
-        svm.train(trainingDataMat, responsesMat,new Mat(),new Mat(),params);
+        svm.train(trainingDataMat, responsesMat, new Mat(), new Mat(), params);
         Log.i(TAG, "SVM");
+        Log.i(TAG, "SVM123");
 //        StringBuilder text = new StringBuilder();
 //        double[] data;
 //        for (int row = 0; row <= 8; row++) {
