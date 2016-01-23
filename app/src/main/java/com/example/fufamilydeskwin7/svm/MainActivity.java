@@ -14,7 +14,6 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
-import org.opencv.core.TermCriteria;
 import org.opencv.ml.CvSVM;
 import org.opencv.ml.CvSVMParams;
 
@@ -24,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private float [][]tain ={{10,10},{35,2},{50,50},{60,10},{20,60},
             {100,500},{70,50},{80,200},{60,90},{10,300}};
     private double []labels = {-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0,1.0};
+    private Boolean svmBoo;
     private Mat trainingDataMat;
     private Mat responsesMat;
     private CvSVMParams params;
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void buttonClick(View v) {
         Log.i(TAG, "onClick");
-        trainingDataMat = new Mat(10, 2, CvType.CV_64FC1);
+        trainingDataMat = new Mat(10, 2, CvType.CV_32FC1);
         Log.i(TAG, "new Mat");
         for (int row = 0; row <= 9; row++) {
             Log.i(TAG, "for loop row tain to Mat");
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         Log.i(TAG, "tain to Mat finish");
-        responsesMat = new Mat(10, 1, CvType.CV_64FC1);
+        responsesMat = new Mat(10, 1, CvType.CV_32FC1);
         Log.i(TAG, "new Mat-responsesMat");
         for (int row = 0; row <= 9; row++) {
             Log.i(TAG, "for loop row labels to Mat");
@@ -70,13 +70,18 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         Log.i(TAG, "labels to Mat finish");
+        /*params = new CvSVMParams();
+        Log.i(TAG, "new CvSVMParams");
         params.set_svm_type(CvSVM.C_SVC);
         Log.i(TAG, "svm_type");
         params.set_kernel_type(CvSVM.LINEAR);
         Log.i(TAG, "kernel_type");
         params.set_term_crit(new TermCriteria(TermCriteria.MAX_ITER, 100, 1e-6));
-        Log.i(TAG, "params finish");
-        svm.train(trainingDataMat, responsesMat, new Mat(), new Mat(), params);
+        Log.i(TAG, "params finish");*/
+        svm = new CvSVM();
+        Log.i(TAG, "new CvSVM");
+//        svmBoo=svm.train(trainingDataMat, responsesMat, new Mat(), new Mat(), params);
+        svmBoo = svm.train(trainingDataMat, responsesMat);
         Log.i(TAG, "SVM");
         Log.i(TAG, "SVM123");
 //        StringBuilder text = new StringBuilder();
