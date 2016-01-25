@@ -14,6 +14,7 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
+import org.opencv.core.TermCriteria;
 import org.opencv.ml.CvSVM;
 import org.opencv.ml.CvSVMParams;
 
@@ -70,17 +71,22 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         Log.i(TAG, "labels to Mat finish");
-        /*params = new CvSVMParams();
+//        svm = new CvSVM(trainingDataMat, responsesMat);
+        svm = new CvSVM();
+
+        params = new CvSVMParams();
         Log.i(TAG, "new CvSVMParams");
         params.set_svm_type(CvSVM.C_SVC);
         Log.i(TAG, "svm_type");
         params.set_kernel_type(CvSVM.LINEAR);
         Log.i(TAG, "kernel_type");
         params.set_term_crit(new TermCriteria(TermCriteria.MAX_ITER, 100, 1e-6));
-        Log.i(TAG, "params finish");*/
-        svm = new CvSVM(trainingDataMat, responsesMat);
+        Log.i(TAG, "params finish");
+
         Log.i(TAG, "new CvSVM");
 //        svmBoo=svm.train(trainingDataMat, responsesMat, new Mat(), new Mat(), params);
+        svm.train_auto(trainingDataMat, responsesMat, new Mat(), new Mat(), params);
+
 //        svmBoo = svm.train(trainingDataMat, responsesMat);
         Log.i(TAG, "SVM");
         Log.i(TAG, "SVM123");
@@ -92,6 +98,10 @@ public class MainActivity extends AppCompatActivity {
 ////                text.append(String.valueOf(data[0][0]));
 //        }
 //        information.setText(text);
+
+
+
+
 
     }
 
