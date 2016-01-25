@@ -17,6 +17,7 @@ import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.core.TermCriteria;
 import org.opencv.ml.CvSVM;
 import org.opencv.ml.CvSVMParams;
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "OCVSample::Activity";
     private Scalar tains[];
     private float [][]tain ={{10,10},{35,2},{50,50},{60,10},{20,60},
-            {10,500},{70,50},{80,20},{60,90},{10,300}};
+            {10,150},{70,50},{80,20},{60,90},{20,100}};
     private double []labels = {-1.0, -1.0, -1.0, -1.0, -1.0, -1.0,
             1.0, 1.0, 1.0, 1.0,1.0};
     private Boolean svmBoo;
@@ -105,32 +106,33 @@ public class MainActivity extends AppCompatActivity {
 ////                text.append(String.valueOf(data[0][0]));
 //        }
 //        information.setText(text);
-
-        Mat show32 = new Mat(600,600,CvType.CV_32SC3);
-        int[] green = {0, 255, 0};
-        int[] red = {255, 0, 0};
-        for (int row = 1; row <= 600; row++) {
-            for (int col = 1; col <= 600; col++) {
+//        Size showsize = new Size(160, 160);
+        Mat show32 = new Mat(160,300,CvType.CV_32SC3);
+        Size showsize = show32.size();
+        double[] green = {0, 255, 0};
+        double[] red = {255, 0, 0};
+        for (int row = 0; row <= showsize.height; row++) {
+            for (int col = 0; col <= showsize.width; col++) {
                 Log.i(TAG, "response "+String.valueOf(row)+" , "+String.valueOf(col));
 
-                Mat input=new Mat(1,2,CvType.CV_32FC1, new Scalar(col,row));
-                float response = svm.predict(input);
+                Mat input=new Mat(1,2,CvType.CV_32FC1, new Scalar(row,col));
+                double response = svm.predict(input);
 
 
                 if (response == 1) {
-                    show32.put(row, col, green );
-                } else {
+                    show32.put(row,col,green );
+                } else if (response == -1) {
                     show32.put(row, col, red);
                 }
             }
         }
 
         Log.i(TAG, "response OK");
-        Mat show = new Mat(600, 600, CvType.CV_8UC3);
+        Mat show = new Mat(showsize, CvType.CV_8UC3);
         Log.i(TAG, "new Mat : show");
         show32.convertTo(show, CvType.CV_8UC3);
         Log.i(TAG, "convertTo OK");
-        showbm = Bitmap.createBitmap(600,600, Bitmap.Config.ARGB_8888);
+        showbm = Bitmap.createBitmap((int)showsize.width,(int)showsize.height, Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(show, showbm);
         Log.i(TAG, "mattobitmap");
         showimage.setImageBitmap(showbm);
