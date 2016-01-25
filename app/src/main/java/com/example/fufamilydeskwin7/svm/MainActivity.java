@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "svm_type");
         params.set_kernel_type(CvSVM.LINEAR);
         Log.i(TAG, "kernel_type");
-        params.set_term_crit(new TermCriteria(TermCriteria.MAX_ITER, 100, 1e-6));
+        params.set_term_crit(new TermCriteria(TermCriteria.EPS, 100, 1e-6));
         Log.i(TAG, "params finish");
 
         Log.i(TAG, "new CvSVM");
