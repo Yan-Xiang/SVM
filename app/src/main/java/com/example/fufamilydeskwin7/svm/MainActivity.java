@@ -27,8 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private Scalar tains[];
     private float [][]tain ={{10,10},{35,2},{50,50},{60,10},{20,60},
             {10,150},{70,50},{80,20},{60,90},{20,100}};
-    private double []labels = {-1.0, -1.0, -1.0, -1.0, -1.0, -1.0,
-            1.0, 1.0, 1.0, 1.0,1.0};
+    private float []labels = {-1, -1, -1, -1, -1,
+            1, 1, 1, 1, 1};
     private Boolean svmBoo;
     private Mat trainingDataMat;
     private Mat responsesMat;
@@ -108,15 +108,16 @@ public class MainActivity extends AppCompatActivity {
 //        information.setText(text);
 //        Size showsize = new Size(160, 160);
         Mat show32 = new Mat(160,300,CvType.CV_32SC3);
-        Size showsize = show32.size();
+        Size show32size = show32.size();
         double[] green = {0, 255, 0};
         double[] red = {255, 0, 0};
-        for (int row = 0; row <= showsize.height; row++) {
-            for (int col = 0; col <= showsize.width; col++) {
+
+        for (int row = 0; row <= show32size.height; row++) {
+            for (int col = 0; col <= show32size.width; col++) {
                 Log.i(TAG, "response "+String.valueOf(row)+" , "+String.valueOf(col));
 
                 Mat input=new Mat(1,2,CvType.CV_32FC1, new Scalar(row,col));
-                double response = svm.predict(input);
+                float response = svm.predict(input);
 
 
                 if (response == 1) {
@@ -124,15 +125,33 @@ public class MainActivity extends AppCompatActivity {
                 } else if (response == -1) {
                     show32.put(row, col, red);
                 }
+                Log.i(TAG, "response value: " + String.valueOf(response));
             }
         }
+        double[] whiet = {255, 255, 255};
+        double[] black = {0, 0, 0};
+        for (int tainrow = 0; tainrow <= 9; tainrow++) {
+//            for (int taincol = 0; taincol <= 1; taincol++) {
+                for (int row = 0; row < 5; row++) {
+                    for (int col = 0; col < 5; col++) {
+                        if (labels[tainrow] == 1) {
+                            int putrow = (int)tain[tainrow][0] + row - 2;
+                            show32.put(putrow, (int)tain[tainrow][1] + col - 2, whiet);
 
+                        }
+                        else if (labels[tainrow] == -1) {
+                            show32.put((int)tain[tainrow][0] + row - 2, (int)tain[tainrow][1] + col - 2, black);
+                        }
+                    }
+                }
+//            }
+        }
         Log.i(TAG, "response OK");
-        Mat show = new Mat(showsize, CvType.CV_8UC3);
+        Mat show = new Mat(show32size, CvType.CV_8UC3);
         Log.i(TAG, "new Mat : show");
         show32.convertTo(show, CvType.CV_8UC3);
         Log.i(TAG, "convertTo OK");
-        showbm = Bitmap.createBitmap((int)showsize.width,(int)showsize.height, Bitmap.Config.ARGB_8888);
+        showbm = Bitmap.createBitmap((int)show32size.width,(int)show32size.height, Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(show, showbm);
         Log.i(TAG, "mattobitmap");
         showimage.setImageBitmap(showbm);
