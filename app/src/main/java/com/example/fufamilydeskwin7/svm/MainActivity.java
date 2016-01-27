@@ -27,11 +27,13 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "OCVSample::Activity";
     private Scalar tains[];
 //    private float[][] tain ={{10,10},{35,2},{50,50},{60,10},{20,60},
-//            {120,150},{150,140},{120,60},{100,120},{90,100}};
+//            {120,150},{150,140},{120,60},{100,120},{90,100}};//原本斜對角
 //    private float[][]tain={{10,10},{2,35},{50,50},{10,60},{60,20},
-//            {150,120},{140,150},{60,120},{120,100},{100,90}};
+//            {150,120},{140,150},{60,120},{120,100},{100,90}};//對原本斜對角做全對稱交換
     private float[][]tain={{10,10},{2,35},{50,50},{10,60},{60,20},
-            {20,120},{40,150},{60,120},{20,100},{10,90}};
+            {20,120},{40,150},{60,120},{20,100},{10,90}};//左右邊
+//    private float[][]tain={{10,10},{2,35},{50,50},{10,60},{60,20},
+//            {150,20},{140,50},{140,20},{120,10},{100,90}};//上下邊
     private float []labels = {-1, -1, -1, -1, -1,
             1, 1, 1, 1, 1};
     private Boolean svmBoo;
@@ -66,9 +68,8 @@ public class MainActivity extends AppCompatActivity {
         trainingDataMat = new Mat(10, 2, CvType.CV_32FC1);
         Log.i(TAG, "new Mat");
         for (int row = 0; row <= 9; row++) {
-            Log.i(TAG, "for loop row tain to Mat");
             for (int col = 0; col <= 1; col++) {
-                Log.i(TAG, "for loop col tain to Mat");
+                //,put(int row, int col, data)
                 trainingDataMat.put(row, col, tain[row][col]);
 
             }
@@ -77,28 +78,27 @@ public class MainActivity extends AppCompatActivity {
         responsesMat = new Mat(10, 1, CvType.CV_32FC1);
         Log.i(TAG, "new Mat-responsesMat");
         for (int row = 0; row <= 9; row++) {
-            Log.i(TAG, "for loop row labels to Mat");
             for (int col = 0; col < 1; col++) {
-                Log.i(TAG, "for loop col labels to Mat");
+
+                //,put(int row, int col, data)
                 responsesMat.put(row,col, labels[row]);
             }
         }
         Log.i(TAG, "labels to Mat finish");
 //        svm = new CvSVM(trainingDataMat, responsesMat);
         svm = new CvSVM();
-
         params = new CvSVMParams();
         Log.i(TAG, "new CvSVMParams");
         //設定CvSVMParams
         params.set_svm_type(CvSVM.C_SVC);
         params.set_kernel_type(CvSVM.LINEAR);
-        params.set_term_crit(new TermCriteria(TermCriteria.EPS|TermCriteria.MAX_ITER, 100, 1e-6));
+        params.set_term_crit(new TermCriteria(TermCriteria.MAX_ITER, 100, 1e-6));
         Log.i(TAG, "params finish");
 
         Log.i(TAG, "new CvSVM");
 //        svmBoo=svm.train(trainingDataMat, responsesMat, new Mat(), new Mat(), params);
         //做 SVM 訓練
-        svm.train_auto(trainingDataMat, responsesMat, new Mat(), new Mat(), params);
+        svm.train(trainingDataMat, responsesMat, new Mat(), new Mat(), params);
 
 //        svmBoo = svm.train(trainingDataMat, responsesMat);
         Log.i(TAG, "SVM train OK");
@@ -128,32 +128,38 @@ public class MainActivity extends AppCompatActivity {
 
 
                 if (response == 1) {
+                    //結果是1塗green
                     show32.put(row,col,green );
                 } else if (response == -1) {
+                    //結果是-1塗red
                     show32.put(row, col, red);
+
                 }
 //                Log.i(TAG, "response value: " + String.valueOf(response));
             }
         }
+
+        //繪製預設訓練的點
         double[] whiet = {255, 255, 255};
         double[] black = {0, 0, 0};
-        for (int tainrow = 0; tainrow <= 9; tainrow++) {
+        for (int tainrow = 0; tainrow <= 9; tainrow++) {        //取預設訓練Data --> 陣列tain
 //            for (int taincol = 0; taincol <= 1; taincol++) {
-                for (int row = 0; row < 5; row++) {
-                    for (int col = 0; col < 5; col++) {
-                        if (labels[tainrow] == 1) {
+                for (int row = 0; row < 5; row++) {     //上下 放大點像素
+                    for (int col = 0; col < 5; col++) {     //左右 放大點像素
+                        if (labels[tainrow] == 1) {     //當是1 塗白色
                             int putrow = (int)tain[tainrow][0] + row - 2;
+                            //,put(int row, int col, data)
                             show32.put(putrow, (int)tain[tainrow][1] + col - 2, whiet);
 
                         }
-                        else if (labels[tainrow] == -1) {
+                        else if (labels[tainrow] == -1) {           //當是-1塗黑色
+                            //,put(int row, int col, data)
                             show32.put((int)tain[tainrow][0] + row - 2, (int)tain[tainrow][1] + col - 2, black);
                         }
                     }
                 }
 //            }
         }
-
 
         Log.i(TAG, "response OK");
         Mat show = new Mat(show32size, CvType.CV_8UC3);
@@ -204,8 +210,8 @@ public class MainActivity extends AppCompatActivity {
     }
     public void layout_set() {
         information=(TextView) findViewById(R.id.Text);
-        inputx = (EditText) findViewById(R.id.inputx);
-        inputy = (EditText) findViewById(R.id.inputy);
+//        inputx = (EditText) findViewById(R.id.inputx);
+//        inputy = (EditText) findViewById(R.id.inputy);
         showimage = (ImageView) findViewById(R.id.showimage);
     }
 
