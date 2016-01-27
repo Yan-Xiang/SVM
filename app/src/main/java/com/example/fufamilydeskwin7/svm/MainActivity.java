@@ -19,14 +19,19 @@ import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.core.TermCriteria;
+import org.opencv.imgproc.Imgproc;
 import org.opencv.ml.CvSVM;
 import org.opencv.ml.CvSVMParams;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "OCVSample::Activity";
     private Scalar tains[];
-    private float [][]tain ={{10,10},{35,2},{50,50},{60,10},{20,60},
-            {10,150},{70,50},{80,20},{60,90},{20,100}};
+//    private float[][] tain ={{10,10},{35,2},{50,50},{60,10},{20,60},
+//            {120,150},{150,140},{120,60},{100,120},{90,100}};
+//    private float[][]tain={{10,10},{2,35},{50,50},{10,60},{60,20},
+//            {150,120},{140,150},{60,120},{120,100},{100,90}};
+    private float[][]tain={{10,10},{2,35},{50,50},{10,60},{60,20},
+            {20,120},{40,150},{60,120},{20,100},{10,90}};
     private float []labels = {-1, -1, -1, -1, -1,
             1, 1, 1, 1, 1};
     private Boolean svmBoo;
@@ -84,20 +89,20 @@ public class MainActivity extends AppCompatActivity {
 
         params = new CvSVMParams();
         Log.i(TAG, "new CvSVMParams");
+        //設定CvSVMParams
         params.set_svm_type(CvSVM.C_SVC);
-        Log.i(TAG, "svm_type");
         params.set_kernel_type(CvSVM.LINEAR);
-        Log.i(TAG, "kernel_type");
-        params.set_term_crit(new TermCriteria(TermCriteria.EPS, 100, 1e-6));
+        params.set_term_crit(new TermCriteria(TermCriteria.EPS|TermCriteria.MAX_ITER, 100, 1e-6));
         Log.i(TAG, "params finish");
 
         Log.i(TAG, "new CvSVM");
 //        svmBoo=svm.train(trainingDataMat, responsesMat, new Mat(), new Mat(), params);
+        //做 SVM 訓練
         svm.train_auto(trainingDataMat, responsesMat, new Mat(), new Mat(), params);
 
 //        svmBoo = svm.train(trainingDataMat, responsesMat);
-        Log.i(TAG, "SVM");
-        Log.i(TAG, "SVM123");
+        Log.i(TAG, "SVM train OK");
+
 //        StringBuilder text = new StringBuilder();
 //        double[] data;
 //        for (int row = 0; row <= 8; row++) {
@@ -106,17 +111,19 @@ public class MainActivity extends AppCompatActivity {
 ////                text.append(String.valueOf(data[0][0]));
 //        }
 //        information.setText(text);
-//        Size showsize = new Size(160, 160);
-        Mat show32 = new Mat(160,300,CvType.CV_32SC3);
+
+        //標記訓練資料點的位置
+        Mat show32 = new Mat(160,160,CvType.CV_32SC3);
         Size show32size = show32.size();
-        double[] green = {0, 255, 0};
-        double[] red = {255, 0, 0};
+        double[] green = {100, 255, 100};
+        double[] red = {255, 70, 70};
 
         for (int row = 0; row <= show32size.height; row++) {
             for (int col = 0; col <= show32size.width; col++) {
-                Log.i(TAG, "response "+String.valueOf(row)+" , "+String.valueOf(col));
-
+//                Log.i(TAG, "response "+String.valueOf(row)+" , "+String.valueOf(col));
+                //輸入圖片各個點的座標
                 Mat input=new Mat(1,2,CvType.CV_32FC1, new Scalar(row,col));
+                //一一比對，讓每個點都判斷過，畫出整張圖的結果
                 float response = svm.predict(input);
 
 
@@ -125,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (response == -1) {
                     show32.put(row, col, red);
                 }
-                Log.i(TAG, "response value: " + String.valueOf(response));
+//                Log.i(TAG, "response value: " + String.valueOf(response));
             }
         }
         double[] whiet = {255, 255, 255};
@@ -146,12 +153,16 @@ public class MainActivity extends AppCompatActivity {
                 }
 //            }
         }
+
+
         Log.i(TAG, "response OK");
         Mat show = new Mat(show32size, CvType.CV_8UC3);
         Log.i(TAG, "new Mat : show");
         show32.convertTo(show, CvType.CV_8UC3);
+        Imgproc.resize(show, show, new Size(600, 600));
         Log.i(TAG, "convertTo OK");
-        showbm = Bitmap.createBitmap((int)show32size.width,(int)show32size.height, Bitmap.Config.ARGB_8888);
+        Size showsize = show.size();
+        showbm = Bitmap.createBitmap((int)showsize.width,(int)showsize.height, Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(show, showbm);
         Log.i(TAG, "mattobitmap");
         showimage.setImageBitmap(showbm);
