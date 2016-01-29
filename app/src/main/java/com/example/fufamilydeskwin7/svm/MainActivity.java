@@ -30,10 +30,10 @@ public class MainActivity extends AppCompatActivity {
 //            {120,150},{150,140},{120,60},{100,120},{90,100}};//原本斜對角
 //    private float[][]tain={{10,10},{2,35},{50,50},{10,60},{60,20},
 //            {150,120},{140,150},{60,120},{120,100},{100,90}};//對原本斜對角做全對稱交換
-    private float[][]tain={{10,10},{2,35},{50,50},{10,60},{60,20},
-            {20,120},{40,150},{60,120},{20,100},{10,90}};//左右邊
 //    private float[][]tain={{10,10},{2,35},{50,50},{10,60},{60,20},
-//            {150,20},{140,50},{140,20},{120,10},{100,90}};//上下邊
+//            {20,120},{40,150},{60,120},{20,100},{10,90}};//左右邊
+    private float[][]tain={{10,10},{2,35},{50,50},{10,60},{60,20},
+            {150,20},{140,50},{140,20},{120,10},{100,90}};//上下邊
     private float []labels = {-1, -1, -1, -1, -1,
             1, 1, 1, 1, 1};
     private Boolean svmBoo;
@@ -96,11 +96,10 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "params finish");
 
         Log.i(TAG, "new CvSVM");
-//        svmBoo=svm.train(trainingDataMat, responsesMat, new Mat(), new Mat(), params);
         //做 SVM 訓練
         svm.train(trainingDataMat, responsesMat, new Mat(), new Mat(), params);
 
-//        svmBoo = svm.train(trainingDataMat, responsesMat);
+//        svm.train(trainingDataMat, responsesMat);
         Log.i(TAG, "SVM train OK");
 
 //        StringBuilder text = new StringBuilder();
