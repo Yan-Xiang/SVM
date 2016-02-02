@@ -23,29 +23,29 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.ml.CvSVM;
 import org.opencv.ml.CvSVMParams;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private static final String TAG = "OCVSample::Activity";
     private Scalar tains[];
-//    private float[][] tain ={{10,10},{35,2},{50,50},{60,10},{20,60},
-//            {120,150},{150,140},{120,60},{100,120},{90,100}};//原本斜對角
+    private float[][] diagonal_train ={{10,10},{35,2},{50,50},{60,10},{20,60},
+            {120,150},{150,140},{120,60},{100,120},{90,100}};//原本斜對角
 //    private float[][]tain={{10,10},{2,35},{50,50},{10,60},{60,20},
 //            {150,120},{140,150},{60,120},{120,100},{100,90}};//對原本斜對角做全對稱交換
-//    private float[][]tain={{10,10},{2,35},{50,50},{10,60},{60,20},
-//            {20,120},{40,150},{60,120},{20,100},{10,90}};//左右邊
-    private float[][]tain={{10,10},{2,35},{50,50},{10,60},{60,20},
+    private float[][]left_right_train={{10,10},{2,35},{50,50},{10,60},{60,20},
+            {20,120},{40,150},{60,120},{20,100},{10,90}};//左右邊
+    private float[][]up_down_train={{10,10},{2,35},{50,50},{10,60},{60,20},
             {150,20},{140,50},{140,20},{120,10},{100,90}};//上下邊
     private float []labels = {-1, -1, -1, -1, -1,
             1, 1, 1, 1, 1};
     private Boolean svmBoo;
     private Mat trainingDataMat;
     private Mat responsesMat;
-    private CvSVMParams params;
-    private CvSVM svm;
+//    private CvSVMParams params;
+//    private CvSVM svm;
 
 
     private TextView information;
     private EditText inputx, inputy;
-    private Button check;
+    private Button up_down, left_right, diagonal;
     private Bitmap showbm;
     private ImageView showimage;
 
@@ -62,8 +62,19 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
-    public void buttonClick(View v) {
+    @Override
+    public void onClick(View v) {
+        if (v == up_down) {
+            lrean(up_down_train);
+        }
+        if (v == left_right) {
+            lrean(left_right_train);
+        }
+        if (v == diagonal) {
+            lrean(diagonal_train);
+        }
+    }
+    public void lrean(float[][] tain) {
         Log.i(TAG, "onClick");
         trainingDataMat = new Mat(10, 2, CvType.CV_32FC1);
         Log.i(TAG, "new Mat");
@@ -86,19 +97,37 @@ public class MainActivity extends AppCompatActivity {
         }
         Log.i(TAG, "labels to Mat finish");
 //        svm = new CvSVM(trainingDataMat, responsesMat);
-        svm = new CvSVM();
+        CvSVMParams params;
+
         params = new CvSVMParams();
         Log.i(TAG, "new CvSVMParams");
         //設定CvSVMParams
         params.set_svm_type(CvSVM.C_SVC);
-        params.set_kernel_type(CvSVM.LINEAR);
+        params.set_kernel_type(CvSVM.RBF);
+//        params.set_C(1);  //给参数赋初始值
+//        params.set_p(5e-3);  //给参数赋初始值
+//        params.set_gamma(0.01);  //给参数赋初始值
+        params.set_gamma(3);  //给参数赋初始值
+        params.set_C(100);  //给参数赋初始值
         params.set_term_crit(new TermCriteria(TermCriteria.MAX_ITER, 100, 1e-6));
         Log.i(TAG, "params finish");
-
+        //对不用的参数step设为0
+//        CvParamGrid nuGrid = CvParamGrid(1,1,0.0);
+//        CvParamGrid coeffGrid = CvParamGrid(1,1,0.0);
+//        CvParamGrid degreeGrid = CvParamGrid(1,1,0.0);
         Log.i(TAG, "new CvSVM");
         //做 SVM 訓練
-        svm.train(trainingDataMat, responsesMat, new Mat(), new Mat(), params);
-
+        CvSVM svm;
+        svm = new CvSVM();
+        svm.train_auto(trainingDataMat, responsesMat, new Mat(), new Mat(), params);
+//        svm.train_auto(trainingDataMat, responsesMat, new Mat(), new Mat(), params,
+//                10,
+//                svm.(CvSVM.C),
+//                CvSVM.get_default_grid(CvSVM.GAMMA),
+//                CvSVM..get_default_grid(CvSVM::P),
+//                nuGrid,
+//                coeffGrid,
+//                degreeGrid);
 //        svm.train(trainingDataMat, responsesMat);
         Log.i(TAG, "SVM train OK");
 
@@ -175,10 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void checkClick(View v) {
-//        inputx
-//                inputy
-    }
+
     //OpenCV类库加载并初始化成功后的回调函数，在此我们不进行任何操作
         private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
             @Override
@@ -209,9 +235,18 @@ public class MainActivity extends AppCompatActivity {
     }
     public void layout_set() {
         information=(TextView) findViewById(R.id.Text);
-//        inputx = (EditText) findViewById(R.id.inputx);
-//        inputy = (EditText) findViewById(R.id.inputy);
+
         showimage = (ImageView) findViewById(R.id.showimage);
+        up_down = (Button) findViewById(R.id.updown);
+        left_right = (Button) findViewById(R.id.leftright);
+        diagonal = (Button) findViewById(R.id.Diagonal);
+
+        up_down.setOnClickListener(this);
+        left_right.setOnClickListener(this);
+        diagonal.setOnClickListener(this);
+
+
     }
+
 
 }
